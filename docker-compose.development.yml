@@ -1,0 +1,44 @@
+name: blog
+
+services:
+  postgreSQL:
+    image: blog-postgres
+    container_name: "blog-postgreSQL"
+
+    build: ./db
+    env_file:
+      - .env.development
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - POSTGRES_USER=${POSTGRES_USER?Variable not set}
+      - POSTGRES_DB=${POSTGRES_DB?Variable not set}
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    volumes:
+      - type: volume
+        source: blog-db
+        target: /var/lib/postgresql/data
+    networks:
+      - blog-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  db-adminer:
+    image: adminer
+    container_name: blog-db-adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - blog-network
+
+volumes:
+  blog-db:
+
+networks:
+  blog-network:
