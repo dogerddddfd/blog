@@ -7,8 +7,11 @@
          <el-form-item style="margin:30px 0px 3dvh 0px" prop="password">
             <el-input v-model="login_form.password" />
          </el-form-item>
-         <el-form-item size='large' style="float: right;">
-            <el-button type="primary" @click="clickSbumit()">登录</el-button>
+         <el-form-item style="float: left;">
+            <el-button @click="clickSbumit('visitor')">游客访问</el-button>
+         </el-form-item>
+         <el-form-item style="float: right;">
+            <el-button type="primary" @click="clickSbumit('')">登录</el-button>
             <el-button>重置</el-button>
          </el-form-item>
       </el-form>
@@ -17,7 +20,7 @@
 
 <script setup lang="ts">
 import { reactive, ref, toRaw } from 'vue'
-import { ElForm, ElFormItem, ElInput, ElButton, ElMessage } from 'element-plus'
+import { ElForm, ElFormItem, ElInput, ElButton, ElMessage, FormInstance } from 'element-plus'
 import { submitForm } from '@@/utils/submitForm'
 import { request } from '@@/utils/server'
 import { login_rules } from './form_rules'
@@ -31,14 +34,27 @@ const login_form = reactive({
    password: '123456',
 })
 
-const clickSbumit = async () => {
+
+const clickSbumit = async (option:string) => {
    try {
-      await submitForm(login_form_ref)
-      const data = await request({
-         method: 'post',
-         url: `/auth/login`,
-         data: toRaw(login_form)
-      })
+      let res:any
+      if (option === "visitor") {
+         res = await request({
+            method: 'post',
+            url: `/auth/login`,
+            data: {
+               username: 'visitor',
+               password: 'visitor',
+            }
+         })
+      } else {
+         await submitForm(login_form_ref)
+         res = await request({
+            method: 'post',
+            url: `/auth/login`,
+            data: toRaw(login_form)
+         })
+      }
       ElMessage({
          showClose: true,
          message: '登陆成功',
@@ -46,10 +62,11 @@ const clickSbumit = async () => {
          type: 'success',
       })
 
-      window.sessionStorage.setItem('token', data.token)
+      window.sessionStorage.setItem('token', `Bearer ${res.data.token}`)
 
       router.push('/home')
-   } catch (error: Error) {
+
+   } catch (error: any) {
       ElMessage({
          showClose: true,
          message: error.message,

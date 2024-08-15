@@ -28,6 +28,7 @@ export class PermissionGuard implements CanActivate {
     if (requiredPermissions.length === 0) return true;
     const [, token] = request.headers.authorization?.split(' ') ?? [];
     const permissionName = await this.permissionService.findPermissionNames(request.user)
+    console.log(permissionName)
 
     const isContainedPermission = requiredPermissions.every(item =>
       permissionName.includes(item)

@@ -10,7 +10,7 @@
       <div class="container">
          <p style="text-align: center;font-size: 30px;">【占位】欢迎！</p>
          <p>下面哥们不会写了</p><br>
-         <p>github : <a href="https://github.com/dogerddddfd/vue3_shop">github.com/dogerddddfd/vue3_shop</a></p><br>
+         <p>github : <a href="https://github.com/dogerddddfd/">github.com/dogerddddfd/</a></p><br>
       </div>
    </el-Card>
 </template>

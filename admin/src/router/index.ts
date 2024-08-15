@@ -17,6 +17,7 @@ const routes = [
       redirect: '/welcome',
       children: [
          { path: '/welcome', component: () => import('@@/page/welcome/Welcome.vue') },
+         { path: '/user', component: () => import('@@/page/user/User.vue') },
       ]
    }
 ];
