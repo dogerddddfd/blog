@@ -14,7 +14,7 @@ export class PermissionController {
   }
 
   @Get('test')
-  @Permissions('test')
+  @Permissions('create-permission')
   async test(){
      return this.permissionService.test();
   }

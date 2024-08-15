@@ -22,7 +22,8 @@ api.interceptors.request.use((config) => {
 export async function request(form) {
    try{
       const { data: res } = await api(form)
-      return res.data
+      // console.log(res)
+      return res
    }catch(error){
       throw new Error(error.response.data.message)
    }

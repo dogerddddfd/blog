@@ -1,11 +1,12 @@
 import { Injectable, HttpException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Admin, In, Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { RegisterDto } from './dto/register.dto';
 import { hash, verify } from "argon2"
-import { JwtService } from '@nestjs/jwt';
+// import { JwtService } from '@nestjs/jwt';
 import { Role } from 'src/role/entities/role.entity';
+import { SearchUserDto } from './dto/search-user.dto';
 
 @Injectable()
 export class UserService {
@@ -23,18 +24,18 @@ export class UserService {
     if (user) {
       throw new HttpException('用户名已存在', 401)
     }
-    
+
 
 
     try {
       console.log(registerDto.roleIds)
       const roles = await this.roleRepository.find({
         where: {
-          id: In(registerDto.roleIds || [1] ),
+          id: In(registerDto.roleIds || [1]),
         },
       });
 
-      
+
       const newUserData = {
         username: registerDto.username,
         password: await hash(registerDto.password),
@@ -55,4 +56,25 @@ export class UserService {
     })
   }
 
+  async findAllUser(searchUserDto: SearchUserDto) {
+    const data: any = await this.usersRepository.find({
+      relations: ["roles"],
+      where: { username: Like(`%${searchUserDto.searchUsername}%`) },
+      skip: (searchUserDto.pageNum - 1) * searchUserDto.pageSize,
+      take: searchUserDto.pageSize
+    })
+    // const data = await this.usersRepository.createQueryBuilder()
+    // .leftJoinAndSelect('roles','role')
+    const res = []
+    data.forEach(element => {
+      res.push({
+        username: element.username,
+        roles: []
+      })
+      element.roles.forEach(element => {
+        res[res.length - 1].roles.push(element.name)
+      })
+    });
+    return res
+  }
 }

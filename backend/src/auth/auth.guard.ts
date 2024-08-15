@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
     }
     const request = context.switchToHttp().getRequest()
     const token = this.extractTokenFromHeader(request);
-    if (!token) throw new HttpException('验证不通过', 403);
+    if (!token) throw new HttpException('token验证不通过', 403);
     try {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get('JWT_SECRET'),

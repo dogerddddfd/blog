@@ -25,6 +25,7 @@ export class AuthService {
 
     if (user) {
       const isPasswordCorrect = await verify(user.password, loginDto.password)
+
       if (isPasswordCorrect) {
 
         const payload = {
